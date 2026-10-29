@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PET COIN GAME</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:white;
+  background:linear-gradient(160deg,#10251c,#07110d);
+  text-align:center;
+}
+header{padding:25px 10px;font-size:25px;font-weight:bold;color:#ffd76a}
+.card{
+  max-width:420px;
+  margin:15px auto;
+  padding:20px;
+  background:#183c2c;
+  border:1px solid #477b58;
+  border-radius:22px;
+}
+.balance{font-size:34px;font-weight:bold;margin:15px}
+#pet{
+  width:180px;height:180px;border-radius:50%;
+  border:5px solid #ffd76a;
+  background:radial-gradient(circle,#fff0b3,#e5a92f);
+  font-size:95px;cursor:pointer;
+  box-shadow:0 0 30px #dba72d55;
+  touch-action:manipulation;
+}
+#pet:active{transform:scale(.94)}
+button{
+  border:0;border-radius:12px;padding:13px 18px;
+  margin:6px;background:#ffd76a;color:#17251b;
+  font-size:16px;font-weight:bold;
+}
+nav{display:flex;justify-content:center;flex-wrap:wrap}
+.note{font-size:12px;color:#c7d7cb;line-height:1.5}
+</style>
+</head>
+<body>
+<header>🐾 PET COIN GAME</header>
+
+<div class="card">
+  <p>Your virtual coin balance</p>
+  <div class="balance">🪙 <span id="coins">0</span></div>
+  <button id="pet" aria-label="Tap to earn coins">🐶</button>
+  <p>Tap the pet to collect coins!</p>
+  <p>Energy: <span id="energy">100</span>/100</p>
+</div>
+
+<div class="card">
+  <h3>🎁 Daily Reward</h3>
+  <button id="daily">Claim 100 Coins</button>
+  <p id="message"></p>
+</div>
+
+<div class="card">
+  <h3>👥 Invite Friends</h3>
+  <p>Invite friends to join PET COIN GAME.</p>
+  <button id="invite">Share Game</button>
+</div>
+
+<p class="note">
+Demo version: coins are virtual points only.<br>
+No cash value or cryptocurrency payout is available.
+</p>
+
+<script>
+let coins = Number(localStorage.getItem("petCoins") || 0);
+let energy = 100;
+const coinDisplay = document.getElementById("coins");
+const energyDisplay = document.getElementById("energy");
+const message = document.getElementById("message");
+
+function update(){
+  coinDisplay.textContent = coins.toLocaleString();
+  energyDisplay.textContent = energy;
+  localStorage.setItem("petCoins", String(coins));
+}
+document.getElementById("pet").addEventListener("click",()=>{
+  if(energy <= 0){
+    message.textContent = "Energy khatam! Thodi der baad khelo.";
+    return;
+  }
+  coins++;
+  energy--;
+  message.textContent = "+1 virtual coin!";
+  update();
+});
+document.getElementById("daily").addEventListener("click",()=>{
+  const today = new Date().toISOString().slice(0,10);
+  if(localStorage.getItem("petDaily") === today){
+    message.textContent = "Aaj ka reward pehle hi claim ho chuka hai.";
+    return;
+  }
+  coins += 100;
+  localStorage.setItem("petDaily",today);
+  message.textContent = "100 virtual coins mil gaye!";
+  update();
+});
+document.getElementById("invite").addEventListener("click",()=>{
+  const text = "Try PET COIN GAME!";
+  if(navigator.share){
+    navigator.share({title:"PET COIN GAME",text:text,url:location.href});
+  }else{
+    navigator.clipboard?.writeText(location.href);
+    message.textContent = "Game link share karne ke liye copy karo: "+location.href;
+  }
+});
+setInterval(()=>{
+  if(energy<100){energy=Math.min(100,energy+1);update();}
+},30000);
+update();
+</script>
+</body>
+</html>
